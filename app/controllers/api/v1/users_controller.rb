@@ -29,17 +29,18 @@ class Api::V1::UsersController < ApplicationController
       href: user_params['href'],
       uri: user_params['uri']
     )
-
+    img_url = user_params["images"][0] ? user_params["images"][0]["url"] : nil
+    @user.update(profile_img_url: img_url)
     @user.update(access_token: auth_params['access_token'], refresh_token: auth_params['refresh_token'])
     payload = {user_id: @user.id}
     token = issue_token(payload)
 
     artists = JSON.parse(RestClient.get("https://api.spotify.com/v1/me/top/artists", header).body)
-    artist_aray = artists.map do |artist|
+    artist_array = artists['items'].map do |artist|
       Artist.create(name: artist['name'], image_url: artist['images'][1]['url'])
     end
-    @user.artists = artist_aray
-    byebug
+    @user.artists = artist_array
+    # byebug
 
     render json: {
       jwt: token, user: {

@@ -35,12 +35,11 @@ class Api::V1::UsersController < ApplicationController
     token = issue_token(payload)
 
     artists = JSON.parse(RestClient.get("https://api.spotify.com/v1/me/top/artists", header).body)
-    artist_names = artists['items'].map{|a| a['name']}
-    artist_aray = artist_names.map do |artist|
-      Artist.create(name: artist)
+    artist_aray = artists.map do |artist|
+      Artist.create(name: artist['name'], image_url: artist['images'][1]['url'])
     end
     @user.artists = artist_aray
-    # byebug
+    byebug
 
     render json: {
       jwt: token, user: {

@@ -35,11 +35,16 @@ class Api::V1::UsersController < ApplicationController
     payload = {user_id: @user.id}
     token = issue_token(payload)
 
-    artists = JSON.parse(RestClient.get("https://api.spotify.com/v1/me/top/artists", header).body)
-    artist_array = artists['items'].map do |artist|
-      Artist.create(name: artist['name'], image_url: artist['images'][1]['url'])
+    if @user.expire_artists <= Date.today
+      artists = JSON.parse(RestClient.get("https://api.spotify.com/v1/me/top/artists", header).body)
+      if !(artists['items'].empty?)
+        artist_array = artists['items'].map do |artist|
+          Artist.create(name: artist['name'], image_url: artist['images'][1]['url'])
+        end
+        @user.artists = artist_array
+      end
+      @user.expire_artists = Date.today + 5
     end
-    @user.artists = artist_array
     # byebug
 
     render json: {

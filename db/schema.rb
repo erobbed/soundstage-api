@@ -59,6 +59,7 @@ ActiveRecord::Schema.define(version: 20170918185740) do
     t.string "access_token"
     t.string "refresh_token"
     t.string "profile_img_url"
+    t.date "expire_artists", default: "2017-09-22"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

@@ -3,8 +3,10 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get '/login', to: 'auth#spotify_request'
+      # resources :concerts, only: [:show]
+      get '/concerts/:artist', to: "concerts#search"
       resources :users, only: [:create]
-      # get '/auth/spotify/callback' to: 'auth#create'
+
     end
   end
 end

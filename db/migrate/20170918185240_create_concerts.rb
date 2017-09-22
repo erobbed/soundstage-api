@@ -2,8 +2,12 @@ class CreateConcerts < ActiveRecord::Migration[5.1]
   def change
     create_table :concerts do |t|
       t.string :name
-      t.string :location
-      t.datetime :date
+      t.string :venue
+      t.date :date
+      t.time :time
+      t.string :seatmap
+      t.string :purchase
+
       t.timestamps
     end
   end

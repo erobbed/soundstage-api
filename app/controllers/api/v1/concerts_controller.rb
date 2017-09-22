@@ -20,12 +20,5 @@ class Api::V1::ConcertsController < ApplicationController
     end
 
     render json: {concerts: @concerts}
-
-    #events['_embedded']['events'] = [array]
-    #keys for each:
-    # ['dates'] has ['localTime'] and ['localDate']
-    # ['seatmap']['staticURL']
-    # ['_embedded']['venues'] = [array], map for each and get ['name']
-    #concert.artists
   end
 end

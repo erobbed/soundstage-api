@@ -33,7 +33,7 @@ ActiveRecord::Schema.define(version: 20170918185740) do
     t.string "name"
     t.string "venue"
     t.date "date"
-    t.time "time"
+    t.string "time"
     t.string "seatmap"
     t.string "purchase"
     t.datetime "created_at", null: false

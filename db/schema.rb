@@ -32,7 +32,7 @@ ActiveRecord::Schema.define(version: 20170918185740) do
   create_table "concerts", force: :cascade do |t|
     t.string "name"
     t.string "venue"
-    t.date "date"
+    t.string "date"
     t.string "time"
     t.string "seatmap"
     t.string "purchase"

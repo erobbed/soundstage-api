@@ -8,17 +8,21 @@ class Api::V1::ConcertsController < ApplicationController
 
     @concerts = events['_embedded']['events'].map do |concert|
       seatmap = (!(concert['seatmap']) ? "N/A" : concert['seatmap']['staticUrl'])
-      byebug
+      time = Time.parse(concert['dates']['start']['localTime']).strftime("%r")
+      time[0] == "0" ? time=time[1..-1] : time
+      # byebug
       Concert.find_or_create_by(
         name: concert['name'],
-        date: Date.parse(concert['dates']['start']['localDate']),
-        time: concert['dates']['start']['localTime'],
+        date: Date.parse(concert['dates']['start']['localDate']).strftime("%b %d, %Y"),
+        time: time,
         venue: concert['_embedded']['venues'][0]['name'],
         seatmap: seatmap,
         purchase: concert['url']
+        #concert['_embedded']['venues'].each {|v\ v['location']} is long/long for each venue
       )
     end
 
     render json: {concerts: @concerts}
   end
+
 end

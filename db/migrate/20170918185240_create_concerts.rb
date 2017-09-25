@@ -7,6 +7,8 @@ class CreateConcerts < ActiveRecord::Migration[5.1]
       t.string :time
       t.string :seatmap
       t.string :purchase
+      t.string :lat
+      t.string :long
 
       t.timestamps
     end

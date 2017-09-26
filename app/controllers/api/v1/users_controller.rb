@@ -40,27 +40,41 @@ class Api::V1::UsersController < ApplicationController
       artists = JSON.parse(RestClient.get("https://api.spotify.com/v1/me/top/artists", header).body)
       if !(artists['items'].empty?)
         artist_array = artists['items'].map do |artist|
-          a = Artist.create(name: artist['name'], image_url: artist['images'][1]['url'])
+          # byebug
 
+          a = Artist.find_or_create_by(name: artist['name'], image_url: artist['images'][1]['url'])
+          # a = Artist.find_by(name: "Wilco")
           apikey = ENV['TICKETMASTER']
           events = JSON.parse(RestClient.get("https://app.ticketmaster.com/discovery/v2/events.json?keyword=#{a.name}&apikey=#{apikey}"))
-          @concerts = events['_embedded']['events'].map do |concert|
-            seatmap = (!(concert['seatmap']) ? "N/A" : concert['seatmap']['staticUrl'])
-            time = Time.parse(concert['dates']['start']['localTime']).strftime("%r")
-            time[0] == "0" ? time=time[1..-1] : time
-            # byebug
-            Concert.find_or_create_by(
-              name: concert['name'],
-              date: Date.parse(concert['dates']['start']['localDate']).strftime("%b %d, %Y"),
-              time: time,
-              venue: concert['_embedded']['venues'][0]['name'],
-              lat: concert['_embedded']['venues'][0]['location']['latitude'],
-              long: concert['_embedded']['venues'][0]['location']['longitude'],
-              seatmap: seatmap,
-              purchase: concert['url']
-            )
+
+
+          if events['_embedded']
+            @concerts = events['_embedded']['events'].map do |concert|
+              seatmap = (!(concert['seatmap']) ? "N/A" : concert['seatmap']['staticUrl'])
+              time = concert['dates']['start']
+              if time.keys.include?("localTime")
+                #  if time['localTime'].class == Hash
+                #    byebug
+                #  end
+                time = Time.parse(time['localTime']).strftime("%r")
+                time[0] == "0" ? time=time[1..-1] : time
+              else
+                time = "N/A"
+              end
+
+              Concert.find_or_create_by(
+                name: concert['name'],
+                date: Date.parse(concert['dates']['start']['localDate']).strftime("%b %d, %Y"),
+                time: time,
+                venue: concert['_embedded']['venues'][0]['name'],
+                lat: concert['_embedded']['venues'][0]['location']['latitude'],
+                long: concert['_embedded']['venues'][0]['location']['longitude'],
+                seatmap: seatmap,
+                purchase: concert['url']
+              )
+            end
+            a.concerts = @concerts
           end
-          a.concerts = @concerts
           a
         end
         @user.artists = artist_array

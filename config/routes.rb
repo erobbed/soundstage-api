@@ -5,7 +5,8 @@ Rails.application.routes.draw do
       get '/login', to: 'auth#spotify_request'
       get '/me', to: 'users#me'
       get '/users/:user/concerts', to: 'concerts#show'
-      post '/users/:user/concerts', to: 'concerts#add'
+      post '/users/:user/concerts/:concert', to: 'concerts#add'
+      delete '/users/:user/concerts/:concert', to: 'concerts#remove'
       get '/concerts/:artist', to: "concerts#search"
       resources :users, only: [:create]
 

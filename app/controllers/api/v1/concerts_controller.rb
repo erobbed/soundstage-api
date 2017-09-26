@@ -16,7 +16,21 @@ class Api::V1::ConcertsController < ApplicationController
   end
 
   def add
-    #add concert method here
+    @user = User.find(current_user)
+    @concert = Concert.find(params[:concert])
+    if !(@user.concerts.include?(@concert))
+      @user.concerts << @concert
+    end
+    render json: {concerts: @user.concerts }
+  end
+
+  def remove
+    @user = User.find(current_user)
+    @concert = Concert.find(params[:concert])
+    if @user.concerts.include?(@concert)
+      @user.concerts.delete(@concert.id)
+    end
+    render json: {concerts: @user.concerts }
   end
 
 end

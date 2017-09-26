@@ -4,7 +4,8 @@ Rails.application.routes.draw do
     namespace :v1 do
       get '/login', to: 'auth#spotify_request'
       get '/me', to: 'users#me'
-      # resources :concerts, only: [:show]
+      get '/users/:user/concerts', to: 'concerts#show'
+      post '/users/:user/concerts', to: 'concerts#add'
       get '/concerts/:artist', to: "concerts#search"
       resources :users, only: [:create]
 

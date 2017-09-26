@@ -10,4 +10,13 @@ class Api::V1::ConcertsController < ApplicationController
     render json: {concerts: @concerts}
   end
 
+  def show
+    @user = User.find(current_user)
+    render json: {concerts: @user.concerts }
+  end
+
+  def add
+    #add concert method here
+  end
+
 end

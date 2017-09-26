@@ -30,8 +30,6 @@ class Api::V1::UsersController < ApplicationController
       uri: user_params['uri']
     )
 
-    # byebug
-
     img_url = user_params["images"][0] ? user_params["images"][0]["url"] : nil
     @user.update(profile_img_url: img_url)
     @user.update(access_token: auth_params['access_token'], refresh_token: auth_params['refresh_token'])
@@ -65,19 +63,18 @@ class Api::V1::UsersController < ApplicationController
           a.concerts = @concerts
           a
         end
-        # byebug
         @user.artists = artist_array
       end
       @user.expire_artists = Date.today + 5
     end
-    # byebug
 
     render json: {
       jwt: token, user: {
         username: @user.username,
         spotify_url: @user.spotify_url,
         profile_img_url: @user.profile_img_url,
-        artists: @user.artists
+        artists: @user.artists,
+        id: @user.id
       }
     }
   end
@@ -89,7 +86,8 @@ class Api::V1::UsersController < ApplicationController
         username: @user.username,
         spotify_url: @user.spotify_url,
         profile_img_url: @user.profile_img_url,
-        artists: @user.artists
+        artists: @user.artists,
+        id: @user.id
       }
     }
   end

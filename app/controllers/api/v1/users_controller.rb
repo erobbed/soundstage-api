@@ -14,7 +14,7 @@ class Api::V1::UsersController < ApplicationController
       client_id: ENV['CLIENT_ID'],
       client_secret: ENV['CLIENT_SECRET']
     }
-    # byebug
+
     auth_response = RestClient.post('https://accounts.spotify.com/api/token', body) #ERROR HERE FROM FETCH POST IN AUTH ACTION
     auth_params = JSON.parse(auth_response.body)
     header = {
@@ -29,13 +29,16 @@ class Api::V1::UsersController < ApplicationController
       href: user_params['href'],
       uri: user_params['uri']
     )
+
+    # byebug
+
     img_url = user_params["images"][0] ? user_params["images"][0]["url"] : nil
     @user.update(profile_img_url: img_url)
     @user.update(access_token: auth_params['access_token'], refresh_token: auth_params['refresh_token'])
     payload = {user_id: @user.id}
     token = issue_token(payload)
 
-    if @user.expire_artists > Date.today
+    if @user.expire_artists <= Date.today
       artists = JSON.parse(RestClient.get("https://api.spotify.com/v1/me/top/artists", header).body)
       if !(artists['items'].empty?)
         artist_array = artists['items'].map do |artist|
@@ -78,4 +81,17 @@ class Api::V1::UsersController < ApplicationController
       }
     }
   end
+
+  def me
+    @user = User.find(current_user)
+    render json: {
+      user: {
+        username: @user.username,
+        spotify_url: @user.spotify_url,
+        profile_img_url: @user.profile_img_url,
+        artists: @user.artists
+      }
+    }
+  end
+
 end

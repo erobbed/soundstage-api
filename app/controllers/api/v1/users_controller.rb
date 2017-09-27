@@ -49,19 +49,23 @@ class Api::V1::UsersController < ApplicationController
 
 
           if events['_embedded']
-            @concerts = events['_embedded']['events'].map do |concert|
+
+            filteredconcerts = events['_embedded']['events'].select do |concert|
+              concert['_embedded']['venues'][0].keys.include?('location')
+            end
+
+            @concerts = filteredconcerts.map do |concert|
               seatmap = (!(concert['seatmap']) ? "N/A" : concert['seatmap']['staticUrl'])
               time = concert['dates']['start']
               if time.keys.include?("localTime")
-                #  if time['localTime'].class == Hash
-                #    byebug
-                #  end
                 time = Time.parse(time['localTime']).strftime("%r")
                 time[0] == "0" ? time=time[1..-1] : time
               else
                 time = "N/A"
               end
 
+              # byebug
+              province = (concert['_embedded']['venues'][0]['state'] ? concert['_embedded']['venues'][0]['state']['name'] : concert['_embedded']['venues'][0]['country']['name'])
               Concert.find_or_create_by(
                 name: concert['name'],
                 date: Date.parse(concert['dates']['start']['localDate']).strftime("%b %d, %Y"),
@@ -70,8 +74,11 @@ class Api::V1::UsersController < ApplicationController
                 lat: concert['_embedded']['venues'][0]['location']['latitude'],
                 long: concert['_embedded']['venues'][0]['location']['longitude'],
                 seatmap: seatmap,
-                purchase: concert['url']
+                purchase: concert['url'],
+                city: concert['_embedded']['venues'][0]['city']['name'],
+                state: province
               )
+
             end
             a.concerts = @concerts
           end

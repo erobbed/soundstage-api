@@ -59,12 +59,11 @@ class Api::V1::UsersController < ApplicationController
               time = concert['dates']['start']
               if time.keys.include?("localTime")
                 time = Time.parse(time['localTime']).strftime("%r")
-                time[0] == "0" ? time=time[1..-1] : time
+                time[0] == "0" ? time=time[1...-6] + time[-3..-1] : time=time[0...-6] + time[-3..-1]
               else
                 time = "N/A"
               end
 
-              # byebug
               province = (concert['_embedded']['venues'][0]['state'] ? concert['_embedded']['venues'][0]['state']['name'] : concert['_embedded']['venues'][0]['country']['name'])
               Concert.find_or_create_by(
                 name: concert['name'],

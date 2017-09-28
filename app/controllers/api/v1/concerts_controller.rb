@@ -33,4 +33,11 @@ class Api::V1::ConcertsController < ApplicationController
     render json: {concerts: @user.concerts }
   end
 
+  def index
+    @concerts = Concert.all.select{|c| Date.parse(c.date) > Date.today}
+    @concerts = @concerts.sort_by{|c| Date.parse(c.date)}
+    @concerts = @concerts.select{|c| Date.parse(c.date) < (Date.today + 7)}
+    render json: {concerts: @concerts}
+  end
+
 end

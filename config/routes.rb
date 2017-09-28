@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       post '/users/:user/concerts/:concert', to: 'concerts#add'
       delete '/users/:user/concerts/:concert', to: 'concerts#remove'
       get '/concerts/:artist', to: "concerts#search"
+      get '/concerts', to: 'concerts#index'
       resources :users, only: [:create]
 
     end

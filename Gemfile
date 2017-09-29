@@ -33,6 +33,8 @@ gem 'jwt'
 
 gem 'figaro'
 
+gem 'geokit'
+
 gem 'active_model_serializers'
 
 group :development, :test do

@@ -40,8 +40,11 @@ class Api::V1::ConcertsController < ApplicationController
     lat = request.headers['lat'].to_f
     long = request.headers['long'].to_f
 
-    @concerts = Concert.all.select{|c| Date.parse(c.date) > Date.today && Date.parse(c.date) < (Date.today + 7)}
-    @concerts = @concerts.sort  do |concert1, concert2|
+    @user = User.find(current_user)
+    @concerts = @user.artists.map do |a|
+      a.concerts.select{|c| Date.parse(c.date) > Date.today && Date.parse(c.date) < (Date.today + 7)}
+    end
+    @concerts = @concerts.flatten.sort  do |concert1, concert2|
       order = Date.parse(concert1.date) <=> Date.parse(concert2.date)
       if order != 0
         order
@@ -49,8 +52,15 @@ class Api::V1::ConcertsController < ApplicationController
         concert1.distance(lat, long) <=> concert2.distance(lat, long)
       end
     end
-    byebug
     render json: {concerts: @concerts}
+  end
+
+  def map
+    @user = User.find(current_user)
+    @concerts = @user.artists.map do |a|
+      a.concerts.select{|c| Date.parse(c.date) > Date.today && Date.parse(c.date) < (Date.today + 7) }
+    end
+    render json: {concerts: @concerts.flatten}
   end
 
 end

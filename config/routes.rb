@@ -9,6 +9,7 @@ Rails.application.routes.draw do
       delete '/users/:user/concerts/:concert', to: 'concerts#remove'
       get '/concerts/:artist', to: "concerts#search"
       post '/concerts', to: 'concerts#index'
+      get '/users/:user/concerts/all', to: 'concerts#map'
       resources :users, only: [:create]
 
     end

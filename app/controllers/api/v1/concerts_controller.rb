@@ -31,7 +31,7 @@ class Api::V1::ConcertsController < ApplicationController
     render json: {concerts: @user.concerts }
   end
 
-#pass in curent location lat and long
+#pass in curent location lat and long to index
 #select only upcoming concerts that are less than a week away
 #sort by date
 #if dates are equal, sort by distance using distance method
@@ -53,14 +53,6 @@ class Api::V1::ConcertsController < ApplicationController
       end
     end
     render json: {concerts: @concerts}
-  end
-
-  def map
-    @user = User.find(current_user)
-    @concerts = @user.artists.map do |a|
-      a.concerts.select{|c| Date.parse(c.date) > Date.today && Date.parse(c.date) < (Date.today + 7) }
-    end
-    render json: {concerts: @concerts.flatten}
   end
 
 end

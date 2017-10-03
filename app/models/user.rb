@@ -10,17 +10,13 @@ class User < ApplicationRecord
   end
 
   def refresh_access_token
-    # Check if user's access token has expired
     if access_token_expired?
-      #Request a new access token using refresh token
-      #Create body of request
       body = {
         grant_type: "refresh_token",
         refresh_token: self.refresh_token,
         client_id: ENV['CLIENT_ID'],
         client_secret: ENV["CLIENT_SECRET"]
       }
-      # Send request and updated user's access_token
       auth_response = RestClient.post('https://accounts.spotify.com/api/token', body)
       auth_params = JSON.parse(auth_response)
       self.update(access_token: auth_params["access_token"])
@@ -28,4 +24,24 @@ class User < ApplicationRecord
       puts "Current user's access token has not expired"
     end
   end
+
+  def artists_expired?
+    if self.expire_artists <= Date.today
+      artists = JSON.parse(RestClient.get("https://api.spotify.com/v1/me/top/artists", header).body)
+      if !(artists['items'].empty?)
+        artist_array = artists['items'].map do |artist|
+          a = Artist.find_or_create_by(name: artist['name'], image_url: artist['images'][1]['url'])
+          Concert.fetch(a)
+        end
+        self.artists = artist_array
+      end
+      self.expire_artists = Date.today + 5
+      self.save
+    else
+      self.artists.each do |a|
+        Concert.fetch(a)
+      end
+    end
+  end
+
 end

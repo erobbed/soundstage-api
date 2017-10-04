@@ -62,7 +62,7 @@ class Api::V1::UsersController < ApplicationController
   def geo
     res = RestClient.get("https://maps.googleapis.com/maps/api/geocode/json?address=#{params['geo']}&key=#{ENV['GEOCODE']}")
     coords = JSON.parse(res)['results'][0]['geometry']['location']
-    render json: {lat: coords['lat'], long: coords['lng']}
+    render json: {coords: {latitude: coords['lat'], longitude: coords['lng']}}
   end
 
 end

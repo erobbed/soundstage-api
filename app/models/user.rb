@@ -25,17 +25,10 @@ class User < ApplicationRecord
     end
   end
 
-  def artists_expired?
+  def artists_expired?(req)
     if self.expire_artists <= Date.today
-      body = {
-        grant_type: "authorization_code",
-        code: params[:code],
-        redirect_uri: ENV['REDIRECT_URI'],
-        client_id: ENV['CLIENT_ID'],
-        client_secret: ENV['CLIENT_SECRET']
-      }
 
-      auth_response = RestClient.post('https://accounts.spotify.com/api/token', body)
+      auth_response = RestClient.post('https://accounts.spotify.com/api/token', req)
       auth_params = JSON.parse(auth_response.body)
 
       header = {

@@ -27,6 +27,21 @@ class User < ApplicationRecord
 
   def artists_expired?
     if self.expire_artists <= Date.today
+      body = {
+        grant_type: "authorization_code",
+        code: params[:code],
+        redirect_uri: ENV['REDIRECT_URI'],
+        client_id: ENV['CLIENT_ID'],
+        client_secret: ENV['CLIENT_SECRET']
+      }
+
+      auth_response = RestClient.post('https://accounts.spotify.com/api/token', body)
+      auth_params = JSON.parse(auth_response.body)
+
+      header = {
+        Authorization: "Bearer #{auth_params['access_token']}"
+      }
+
       artists = JSON.parse(RestClient.get("https://api.spotify.com/v1/me/top/artists", header).body)
       if !(artists['items'].empty?)
         artist_array = artists['items'].map do |artist|

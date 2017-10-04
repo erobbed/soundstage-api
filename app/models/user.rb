@@ -25,11 +25,8 @@ class User < ApplicationRecord
     end
   end
 
-  def artists_expired?(req)
+  def artists_expired?(auth_params)
     if self.expire_artists <= Date.today
-
-      auth_response = RestClient.post('https://accounts.spotify.com/api/token', req)
-      auth_params = JSON.parse(auth_response.body)
 
       header = {
         Authorization: "Bearer #{auth_params['access_token']}"

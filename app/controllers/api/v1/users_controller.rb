@@ -33,7 +33,7 @@ class Api::V1::UsersController < ApplicationController
     payload = {user_id: @user.id}
     token = issue_token(payload)
 
-    @user.artists_expired?(body)
+    @user.artists_expired?(auth_params)
 
     render json: {
       jwt: token, user: {

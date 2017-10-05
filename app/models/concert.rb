@@ -1,4 +1,5 @@
 require 'geokit'
+require 'i18n'
 
 class Concert < ApplicationRecord
   has_many :user_concerts
@@ -14,7 +15,8 @@ class Concert < ApplicationRecord
 
   def self.fetch(artist)
     apikey = ENV['TICKETMASTER']
-    events = JSON.parse(RestClient.get("https://app.ticketmaster.com/discovery/v2/events.json?keyword=#{artist.name}&apikey=#{apikey}"))
+    encoded = I18n.transliterate(artist.name)
+    events = JSON.parse(RestClient.get("https://app.ticketmaster.com/discovery/v2/events.json?keyword=#{encoded}&apikey=#{apikey}"))
 
     if events['_embedded']
       @filteredconcerts = events['_embedded']['events'].select do |concert|

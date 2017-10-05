@@ -35,6 +35,8 @@ gem 'figaro'
 
 gem 'geokit'
 
+gem 'i18n'
+
 gem 'active_model_serializers'
 
 group :development, :test do
